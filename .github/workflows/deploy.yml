@@ -1,21 +1,19 @@
-name: Deploy React App to GitHub Pages
+name: Deploy React App to Netlify
 
 on:
   push:
     branches:
-      - main
-
-permissions:
-  contents: write
+      - main  # it will deploy automatically when you push to main branch
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 18
@@ -23,15 +21,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Verify React build
-        run: npm run build --if-present
+      - name: Build project
+        run: npm run build
 
-      - name: List build files
-        run: ls -la build || echo "Build directory not found"
-
-      - name: Deploy to GitHub Pages
-        if: success()
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v2.0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
+          publish-dir: build
+          production-branch: main
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deployed via GitHub Actions"
+          enable-pull-request-comment: false
+          enable-commit-comment: false
